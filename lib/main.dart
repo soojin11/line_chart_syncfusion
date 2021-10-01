@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:intl/intl.dart'; //가격
 
 void main() {
@@ -36,10 +35,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<SalesData>? _chartData;
   TooltipBehavior? _tooltipBehavior;
+  late ZoomPanBehavior _zoomPanBehavior;
   @override
   void initState() {
     _chartData = getChartData();
     _tooltipBehavior = TooltipBehavior(enable: true);
+    _zoomPanBehavior = ZoomPanBehavior(
+      enablePinching: true,
+      zoomMode: ZoomMode.x,
+      enablePanning: true,
+    );
     super.initState();
   }
 
@@ -48,12 +53,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return SafeArea(
       child: Scaffold(
         body: SfCartesianChart(
+          zoomPanBehavior: _zoomPanBehavior,
           title: ChartTitle(
               text: 'Yearly sales analysis'), //타이틀 넣기, 배경색,배열,보더컬러,텍스트스타일도 가능
           legend: Legend(isVisible: true), //범례 표시
           tooltipBehavior: _tooltipBehavior,
           series: <ChartSeries>[
-            LineSeries<SalesData, double>(
+            SplineSeries<SalesData, double>(
                 name: 'Sales', //범례 이름 바꾸기
                 dataSource: _chartData!,
                 xValueMapper: (SalesData sales, _) => sales.year, //x축 값
@@ -66,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
               edgeLabelPlacement:
                   EdgeLabelPlacement.shift), //edge에 있는 라벨을 옮긴다(잘리는거)
           primaryYAxis: NumericAxis(
-              labelFormat: '{value}M',
+              labelFormat: '{value}M', //형식 지정
               numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
               edgeLabelPlacement: EdgeLabelPlacement.shift), //intl 적용해 달러로 표시
         ),
